@@ -229,7 +229,7 @@
     const SUPABASE_URL = 'https://ocnskksoaazogpkejyus.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jbnNra3NvYWF6b2dwa2VqeXVzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzOTEzOTYsImV4cCI6MjA5MDk2NzM5Nn0.0OrKPeglqCKasAK8xczu_y6ly9jX3SU-iSyvab3Oitg';
 
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     let items = [];
     let filter = 'all';
@@ -238,7 +238,7 @@
     input.addEventListener('keydown', e => { if (e.key === 'Enter') addItem(); });
 
     async function loadItems() {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseClient
         .from('shopping_items')
         .select('*')
         .order('created_at', { ascending: true });
@@ -258,7 +258,7 @@
       if (!text) return;
 
       const newItem = { id: Date.now(), text, done: false };
-      const { data, error } = await supabase
+      const { data, error } = await supabaseClient
         .from('shopping_items')
         .insert(newItem)
         .select()
@@ -274,7 +274,7 @@
       const item = items.find(i => i.id === id);
       if (!item) return;
 
-      const { error } = await supabase
+      const { error } = await supabaseClient
         .from('shopping_items')
         .update({ done: !item.done })
         .eq('id', id);
@@ -285,7 +285,7 @@
     }
 
     async function deleteItem(id) {
-      const { error } = await supabase
+      const { error } = await supabaseClient
         .from('shopping_items')
         .delete()
         .eq('id', id);
@@ -299,7 +299,7 @@
       const doneIds = items.filter(i => i.done).map(i => i.id);
       if (doneIds.length === 0) return;
 
-      const { error } = await supabase
+      const { error } = await supabaseClient
         .from('shopping_items')
         .delete()
         .in('id', doneIds);
